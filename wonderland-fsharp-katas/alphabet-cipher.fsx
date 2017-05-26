@@ -11,11 +11,7 @@ let charToInt (c: char) =
 let intToChar (i: int16) =
     System.Convert.ToChar i
 
-let a =
-    let res = charToInt 'a'
-    printfn "a = %i" res
-    res
-
+let a = charToInt 'a'
 let z = charToInt 'z'
 
 let toCharCode (c: char) =
@@ -33,17 +29,18 @@ let repeatKey (key: Keyword) (fillCount: int) =
 
 let mapChars f (key: Keyword) (msg: string) =
     Array.zip (toCharInts msg) (repeatKey key msg.Length)
-    |> Array.map f
+    |> Array.map (f >> intToChar)
     |> String
 
 let encode (key:Keyword) (message:Message) : Message =
-    let msgChars = message.ToCharArray()
-    let keyChars = key.ToCharArray()
-    mapChars (fun (msgCode, keyCode) ->
-        ((keyCode + msgCode) % 26s) + a |> intToChar) key message
+    let encodeChar (msgCode, keyCode) =
+        ((keyCode + msgCode) % 26s) + a
+    mapChars encodeChar key message
 
 let decode (key:Keyword) (message:Message) : Message =
-    "decodeme"
+    let decodeChar (msgCode, keyCode) =
+        ((msgCode - keyCode + 26s) % 26s) + a
+    mapChars decodeChar key message
 
 let decipher (cipher:Message) (message:Message) : Keyword =
     "decypherme"
